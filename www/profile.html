@@ -1,0 +1,134 @@
+<html>
+<head>
+	<title>Where's Bar</title>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<!-- LOAD JQUERY UI LIBS -->
+	<link rel="stylesheet" type="text/css" href="./css/themes/default/jquery.mobile-1.4.0.min.css"/>
+	<script src="./js/jquery.js"></script>
+    <script src="./js/common.js"></script>
+    <script src="./js/jquery.mobile-1.4.0.min.js"></script>
+    <!-- LOAD CUSTOM LIBS -->
+    <link rel="stylesheet" type="text/css" href="./css/themes/default/custom.css"/>
+    <script type="text/javascript">
+    	$(function(){
+    		if(!$_SESSION.get("ServerData")){
+    			bar.setData();
+    		}
+    		else{
+    			console.log("LOADED");
+    		}
+    		setStars(bar.attr(getBar(),"stars",true));
+    		setAbout(getBar());
+    		setServ(bar.attr(getBar(),"services",true));
+    		setPromo(bar.attr(getBar(),"calendar",true));
+    		bar.setInfor(getBar());
+    		var docHeight = $(document).height();
+    		var docHeight = docHeight - (docHeight * 0.15);
+    		$("#messages").css("height",docHeight+"px");
+    	});
+    </script>
+</head>
+<body>
+	<div data-role="page" tabindex="0" class="ui-page ui-page-active" style="background-color: #649940; min-height: 640px;">
+		<!-- Header data -->
+		<div id="header">
+			<img src="./img/icons/logo.png" class='logo'>
+			<div class="Left-Center">
+				Where's Bar
+			</div>
+			<div class="right">
+				<a href="#menu" class="ui-btn ui-icon-bars ui-nodisc-icon ui-btn-icon-notext ui-btn-b ui-corner-all menu">No text</a>
+			</div>
+		</div>
+		<div class="detail"></div>
+		<!-- Body data -->
+		<div id="container" style="margin-top:57px;">
+			<div class="info">
+				<div class='photo'>
+					<img class='thumb' src='./img/icons/logo2.png'>
+				</div>
+				<span class='name'></span><br><br><span class='square'></span><br>
+				<div class="rate">
+					
+				</div>
+				<div class="about">
+					
+				</div>
+				<hr style="margin-top:5px;">
+				<div id='openMess' class="msgButton">Mensagens</div>
+				<hr style="margin-top:10px;">
+				<div class = "label">
+					Fotos
+				</div>
+				<div class='photos'>
+					<div class='photo'></div><div class='photo'></div><div class='photo'></div><div class='photo'></div><div class='photo'></div>
+					<div class='photo'></div><div class='photo'></div><div class='photo'></div><div class='photo'></div><div class='photo'></div>
+				</div>
+				<hr style="margin-top:119px;">
+				<div class='label'>Promoções</div>
+				<div class='promo'>
+					
+				</div>
+				<hr style="margin-top:10px;">
+				<div class='label'>Serviços</div>
+				<div class='serv'>
+					
+				</div>
+			</div>
+		</div>
+		<!-- Menu Panel -->
+		<div id="menu" data-role="panel" id="menu" data-position="right" data-display="overlay">
+			<a href="#" data-rel="close"><div id="MENU-Back"><img src="./img/icons/Back.png"><span>Voltar</span></div></a>
+			<div id="MENU-Options">
+				<div class="select" href='index.html'><img src="./img/icons/Bares.png"> <span>Bares</span></div>
+				<hr> <!-- Quebra de linha -->
+				<div class="select" href='about.html'><img src="./img/icons/About.png"> <span>Sobre</span></div>
+				<!-- Menu Buttons Script -->
+				<script type="text/javascript">
+					$("#MENU-Options .select").click(function(e){
+						e.preventDefault();
+						location.href = $(this).attr("href");
+					});
+				</script>
+			</div>
+		</div>
+		<!-- Message Open/Close -->
+		<script type="text/javascript">
+			$(function(){
+				$('#closeMess').click(function(){
+					$('#messages').fadeOut();
+					$('#block').css("display","none");
+				});
+				$("#openMess").click(function(){
+					$('#messages').fadeIn();
+					$('#block').css("display","block");
+				});
+			});
+		</script>
+		<!-- Messages Script -->
+		<script type="text/javascript">
+			$(function(){
+				var messages = JSON.parse($_SESSION.get("messages_"+getBar()));
+				for(var i = 0;i<messages.length;i++){
+					var messagesData = message.parse(messages[i]);
+					
+					$("#messages .content").append("<span class='PromoLabel'>"+messagesData["title"]+"</span><br><span class='description'>"+messagesData["content"]+"</span><hr>");
+				}
+			});
+		</script>
+		<!-- Messages Popup -->
+		<div id="block"></div>
+		<div id = "messages">
+			<span class="popLabel">Mensagens</span><br>
+			<span class='date'>23/04/2014</span>
+			<div class="right">
+				<a href="#" id='closeMess' style="background-color:#649940; border-color:#fff;" class="ui-btn ui-icon-delete ui-nodisc-icon ui-btn-icon-notext ui-btn-b ui-corner-all menu">No text</a>
+			</div>
+			<div class='content'>
+				
+			</div>
+		</div>
+	</div>
+</body>
+</html>

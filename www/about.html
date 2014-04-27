@@ -1,0 +1,65 @@
+<html>
+<head>
+	<title>Where's Bar</title>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<!-- LOAD JQUERY UI LIBS -->
+	<link rel="stylesheet" type="text/css" href="./css/themes/default/jquery.mobile-1.4.0.min.css"/>
+	<script src="./js/jquery.js"></script>
+    <script src="./js/common.js"></script>
+    <script src="./js/jquery.mobile-1.4.0.min.js"></script>
+    <!-- LOAD CUSTOM LIBS -->
+    <link rel="stylesheet" type="text/css" href="./css/themes/default/custom.css"/>
+    <script type="text/javascript">
+    	$(function(){
+    		var docHeight = $(document).height();
+    		var docHeight = docHeight - (docHeight * 0.15);
+    		$("#messages").css("height",docHeight+"px");
+    	});
+    </script>
+</head>
+<body>
+	<div data-role="page" tabindex="0" class="ui-page ui-page-active" style="background-color: #649940; min-height: 640px;">
+		<!-- Header data -->
+		<div id="header">
+			<img src="./img/icons/logo.png" class='logo'>
+			<div class="Left-Center">
+				Where's Bar
+			</div>
+			<div class="right">
+				<a href="#menu" class="ui-btn ui-icon-bars ui-nodisc-icon ui-btn-icon-notext ui-btn-b ui-corner-all menu">No text</a>
+			</div>
+		</div>
+		<div class="detail"></div>
+		<!-- Body data -->
+		<div id="container" style="margin-top:57px; text-align:center; padding:20px;">
+			<br>
+			<img src="./img/icons/logo.png" height="64px">
+			<h3>+ Informação + Diversão</h3>
+			<p>
+				
+				Uma ideia projetada a para suprir a necessedidade de informação que alguns bares não conseguiam levar aos seus clientes
+				<br>
+				Mais Informações e contato, acesse <a href='http://wheresbar.com.br' target='blank'>http://wheresbar.com.br</a><br>
+				<h4>Obrigado por Baixar</h4>
+			</p>
+		</div>
+		<!-- Menu Panel -->
+		<div id="menu" data-role="panel" id="menu" data-position="right" data-display="overlay">
+			<a href="#" data-rel="close"><div id="MENU-Back"><img src="./img/icons/Back.png"><span>Voltar</span></div></a>
+			<div id="MENU-Options">
+				<div class="select" href='index.html'><img src="./img/icons/Bares.png"> <span>Bares</span></div>
+				<hr> <!-- Quebra de linha -->
+				<div class="select" href='#'><img src="./img/icons/About.png"> <span>Sobre</span></div>
+				<!-- Menu Buttons Script -->
+				<script type="text/javascript">
+					$("#MENU-Options .select").click(function(e){
+						e.preventDefault();
+						location.href = $(this).attr("href");
+					});
+				</script>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
