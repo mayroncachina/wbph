@@ -1,0 +1,26 @@
+<html>
+<head>
+	<title>Geolocation Cordova</title>
+	<script src="./js/jquery.js"></script>
+	<script src="./js/cordova.js"></script>
+	<!--  -->
+	<script type="text/javascript">
+		function showpos(position){
+			var lat = position.coords.latitude;
+			var lng = position.coords.longitude;
+			setInterval(function(){
+				$("#geo").html(lat + "X" + lng);
+			},100);
+		}
+		function error(){
+			alert("erro");
+		}
+		if(navigator.geolocation){
+			navigator.geolocation.watchPosition(showpos,error,{timeout:200});
+		}
+	</script>
+</head>
+<body>
+	<span id='geo'></span>
+</body>
+</html>

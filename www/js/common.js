@@ -1,3 +1,4 @@
+// TODO iniciar a implementacao das estrelas -- prazo 04/05/2014
 function matrix(str){
     var data = new Array();
     var DotsIndex = str.indexOf(":"); 
@@ -39,6 +40,51 @@ var message = {
 }
 // http://www.wheresbar.com.br/webservices/bares/
 // http://http://192.168.137.1/server/index.php
+
+function setClique(barName){
+    var id = bar.get(barName);
+    $.ajax({
+        type: 'GET',
+        url: "http://189.124.190.90:8000/webservices/contagem/"+id+"/",
+        dataType: 'text',
+        crossDomain: true,
+        success: function(data, ts, xhr){
+            console.log(data);
+            location.href = "profile.html#" + barName;
+        }
+    });
+}
+
+function rpl(string,find,replace){
+    while(string.indexOf(find) > 0){
+       string = string.replace(find,replace);
+    }
+    return string;
+}
+function countMessages(pk){
+    var messages = JSON.parse($_SESSION.get("tempMess"));
+    var readed = JSON.parse($_SESSION.get("readMessages"));
+    var barName = bar.attr(pk,"name");
+    var counter = 0;
+    for(var i = 0;i<messages.length;i++){
+        var messageBarId = messages[i].fields.estabelecimento;
+        var text = messages[i].fields.texto;
+        if(messageBarId == pk){
+            counter++;
+        }
+    }
+    if(readed[barName]){
+        if(readed[barName] > counter){
+             return counter;
+        }
+        else{
+             return counter - readed[barName];
+        }
+    }
+    else{
+         return counter;
+    }
+}
 var bar = {
     _data : localStorage.getItem("ServerData"),
     setData:function(){
@@ -52,6 +98,114 @@ var bar = {
             success: function(data, ts, xhr){
                 $_SESSION.set("ServerData",data);
                 location.href='index.html'; 
+            }
+        });
+    },
+    getHot:function(){
+        var bars;
+
+        $.ajax({
+            type: 'GET',
+            url: "http://189.124.190.90:8000/webservices/hot/",
+            dataType: 'text',
+            crossDomain: true,
+            success: function(data, ts, xhr){
+               $_SESSION.set("tempHots",data);
+            }
+        });
+    },
+    getStar:function(){
+        var bars;
+
+        $.ajax({
+            type: 'GET',
+            url: "http://189.124.190.90:8000/webservices/stars/",
+            dataType: 'text',
+            crossDomain: true,
+            success: function(data, ts, xhr){
+                var starX = new Array();
+                var stars = JSON.parse(data);
+                for(var i=0; i < stars.length; i++){
+                    var star = rpl(stars[i],"'",'"');
+                    star = rpl(star,"Decimal(\"","");
+                    star = rpl(star,"\")","");
+                    star = rpl(star,"None","0");
+                    var jStar = JSON.parse(star);
+                    var med = jStar.stars_num / jStar.stars_click;
+                    if(med == NaN){
+                        med = 0;
+                    }
+                    starX[jStar.id] = med;
+                }
+                 $_SESSION.set("tempStars",JSON.stringify(starX));
+                
+            }
+        });
+    },
+    countBars:function(){
+        $.ajax({
+            type: 'GET',
+            url: "http://189.124.190.90:8000/webservices/bares/num/",
+            dataType: 'text',
+            crossDomain: true,
+            success: function(data, ts, xhr){
+                var num = JSON.parse(data).qtd;
+                var NumBares = JSON.parse($_SESSION.get("ServerData")).length;
+                if(num != NumBares){
+                    bar.setData();
+                }
+            }
+        });
+    },
+    getMessages:function(){
+        var bars;
+
+        $.ajax({
+            type: 'GET',
+            url: "http://189.124.190.90:8000/webservices/promocoes/",
+            dataType: 'text',
+            crossDomain: true,
+            success: function(data, ts, xhr){
+                $_SESSION.set("tempMess",data);
+            }
+        });
+    },
+    getPic:function(pk){
+        var bars;
+
+        $.ajax({
+            type: 'GET',
+            url: "http://189.124.190.90:8000/webservices/fotos/"+pk+"/",
+            dataType: 'text',
+            crossDomain: true,
+            success: function(data, ts, xhr){
+                $_SESSION.set("photos_"+pk,data);
+            }
+        });
+    },
+    setHot:function(pk){
+        var bars;
+
+        $.ajax({
+            type: 'GET',
+            url: "http://189.124.190.90:8000/webservices/hot/"+pk+"/",
+            dataType: 'text',
+            crossDomain: true,
+            success: function(data, ts, xhr){
+                console.log("Hoted");
+            }
+        });
+    },
+    setStarS:function(pk,val){
+        var bars;
+
+        $.ajax({
+            type: 'GET',
+            url: "http://189.124.190.90:8000/webservices/stars/"+pk+"/"+val+"/",
+            dataType: 'text',
+            crossDomain: true,
+            success: function(data, ts, xhr){
+                console.log("Hoted");
             }
         });
     },
@@ -98,10 +252,11 @@ var bar = {
             case "calendar" : return field.agenda;
             case "extra" : return field.atendimento;
             case "stars" : return field.stars;
+            case "map" : return field.mapa;
         }
     },
     setInfor:function(barx){
-        $("#container .info .name").html(bar.attr(barx,"name",true));
+        $("#container .info .name .barName").html(bar.attr(barx,"name",true));
         $("#container .info .square").html(bar.attr(barx,"square",true));
     }
 }
@@ -110,14 +265,14 @@ function setStars(value){
     var otherVal = 0;
     for(var i = 0; i < 5;i++){
         if(value > i && value < i+1){
-            $("#container .rate").append('<img src="./img/icons/Rate%201-5%20Star.png" class="star">');
+            $("#container .rate").append('<img onclick="starsSet('+i+')" src="img/icons/Rate%201-5%20Star.png" class="star">');
         }
         else{
             if(value > i){
-                $("#container .rate").append('<img src="./img/icons/Star.png" class="star">');
+                $("#container .rate").append('<img onclick="starsSet('+i+')" src="img/icons/Star.png" class="star">');
             }
             else{
-                $("#container .rate").append('<img src="./img/icons/Rate%20Star.png" class="star">');
+                $("#container .rate").append('<img onclick="starsSet('+i+')" src="img/icons/Rate%20Star.png" class="star">');
             }
         }
     }
@@ -137,7 +292,7 @@ function setServ(text){
         $("#container .info .serv").html("Não informado");
     }
     else{
-        $("#container .info .serv").html(text);
+        $("#container .info .serv").html(rpl(text,"\\r\\n","<br>"));
     }
 
     
@@ -162,7 +317,7 @@ function setAbout(barx){
     if(about == "<hr style='margin-top:10px;'>"){
         about = "";
     }
-    str = "Endereço: "+ street + phone + email + extra +"<br>Música: "+ music + about;
+    str = "Endereço: "+ street +"<a id='gmaps'  target='_blank' href=''><img src='img/icons/place.png' height='16px'></a>" + phone + email + extra +"<br>Música: "+ music + rpl(about,"\\r\\n","<br>");
     $("#container .info .about").html(str);
 }
 
@@ -193,7 +348,6 @@ $(function(){
     });
 });
 
-
 var $_SESSION = {
     set: function(name,value){
         localStorage.setItem(name,value);
@@ -214,28 +368,4 @@ function toNumber(str){
         ret ++;
     }
     return ret;
-}
-// Server Data reciver
-// var $_SERVER = {
-//     _server : "http://localhost/Server/index.php",
-//     login: function(user,pass){
-         
-//          var ServerResponse;
-//          var contactServer = $.post(this._server, {i:"login", username: user, passwd: pass}, function (data){
-//            ServerResponse = data;
-//          })
-//          .done(function(){
-//             $_SESSION.set("loginResponse",ServerResponse);
-//          });
-//          return contactServer.done(); 
-//     }
-// }
-
-
-// WHERE'S BAR FUNCTIONS
-
-function changeTab(TabName){
-    var StorageData = $_SESSION.get(TabName);
-    var data = JSON.parse(StorageData);
-    return data;
 }

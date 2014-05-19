@@ -3,14 +3,19 @@
 	<title>Where's Bar</title>
 	<meta charset="utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
-	<!-- LOAD JQUERY UI LIBS -->
-	<link rel="stylesheet" type="text/css" href="./css/themes/default/jquery.mobile-1.4.0.min.css"/>
-	<script src="./js/jquery.js"></script>
-    <script src="./js/common.js"></script>
-    <script src="./js/jquery.mobile-1.4.0.min.js"></script>
+	<!-- LOAD JQUERY LIBS -->
+	<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.0.min.css"/>
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery.json.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/cordova.js"></script>
+    <script src="js/JM-theme.js"></script>
+    <script src="js/jquery.mobile-1.4.0.min.js"></script>
+    <script src="js/iscroll.js"></script>
     <!-- LOAD CUSTOM LIBS -->
-    <link rel="stylesheet" type="text/css" href="./css/themes/default/custom.css"/>
+    <link rel="stylesheet" type="text/css" href="css/themes/default/custom.css"/>
     <script type="text/javascript">
+    	var maximunImg = 0;
     	$(function(){
     		if(!$_SESSION.get("ServerData")){
     			bar.setData();
@@ -18,22 +23,155 @@
     		else{
     			console.log("LOADED");
     		}
-    		setStars(bar.attr(getBar(),"stars",true));
+    		var stars = JSON.parse($_SESSION.get("tempStars"));
+    		console.log("X"+bar.get());
+    		setClique(getBar());
+    		var checkStar = JSON.parse($_SESSION.get("UserSetStar"));
+    		if(checkStar[getBar()]){
+    			setStars(checkStar[getBar()]);
+    			console.log(getBar());
+    		}
+    		else{
+    			setStars(stars[bar.get(getBar())]);
+    		}
     		setAbout(getBar());
     		setServ(bar.attr(getBar(),"services",true));
-    		setPromo(bar.attr(getBar(),"calendar",true));
     		bar.setInfor(getBar());
     		var docHeight = $(document).height();
     		var docHeight = docHeight - (docHeight * 0.15);
     		$("#messages").css("height",docHeight+"px");
+    		bar.getPic(bar.get(getBar()));
+    		setTimeout(function(){
+	    		var photos = JSON.parse($_SESSION.get("photos_"+bar.get(getBar())));
+	    		console.log(photos.fotos.length);
+	    		maximunImg = (photos.fotos.length - 1);
+	    		if(photos.fotos.length == 0){
+	    			$("#container .info .photos").css("display","none");
+	    			$("#photoLabel").css("display","none");
+	    			$("#beforePhoto").css("display","none");
+	    		}
+	    		else{
+		    		for(var i =0; i<photos.fotos.length;i++ ){
+		    			if(i < 10){
+		    				var photoloc = "http://189.124.190.90:8000/static/"+photos.fotos[i];
+		    				$("#container .info .photos").append("<div onclick='x(\""+photoloc+"\","+i+")' class='photo' src='"+photoloc+"'><img src='"+photoloc+"' heigth='100%'></div>");
+		    			}
+		    		}
+	    		}
+    		},1000);
+    		$("#container .info .photo .thumb").attr("src","http://189.124.190.90:8000/static/"+bar.attr(getBar(),"image",true));
+    		var checkHot = JSON.parse($_SESSION.get("timeOutHot"));
+			if(checkHot[getBar()]){
+				var d = new Date();
+				var n = d.getHours();
+				console.log(n);
+				var ExpireTime = checkHot[getBar()];
+				console.log(ExpireTime - n);
+				if((ExpireTime - n) > 2 || (ExpireTime - n) < -2){
+					$("#setHot").attr("src","img/icons/Hot2.png");
+				}
+				else{
+					$("#setHot").attr("src","img/icons/Hot.png");
+				}
+			}
+			else{
+				$("#setHot").attr("src","img/icons/Hot2.png");
+			}
     	});
     </script>
+    <script type="text/javascript">
+    	function starsSet(num){
+    		var starVal = num+1;
+    		var checkStar = JSON.parse($_SESSION.get("UserSetStar"));
+    		checkStar[getBar()] = starVal;
+    		bar.setStarS(bar.get(getBar()),starVal);
+    		 $("#container .rate").html("");
+		    for(var i = 0; i < 5;i++){
+		        if(starVal > i && starVal < i+1){
+		            $("#container .rate").append('<img onclick="starsSet('+i+')" src="img/icons/Rate%201-5%20Star.png" class="star">');
+		        }
+		        else{
+		            if(starVal > i){
+		                $("#container .rate").append('<img onclick="starsSet('+i+')" src="img/icons/Star.png" class="star">');
+		            }
+		            else{
+		                $("#container .rate").append('<img onclick="starsSet('+i+')" src="img/icons/Rate%20Star.png" class="star">');
+		            }
+		        }
+		    }
+		    var donee = $.toJSON(checkStar);
+			$_SESSION.set("UserSetStar",donee);
+    	}
+		function getNatural($mainImage) {
+		    var mainImage = $mainImage[0],
+		        d = {};
+
+		    if (mainImage.naturalWidth === undefined) {
+		        var i = new Image();
+		        i.src = mainImage.src;
+		        d.oWidth = i.width;
+		        d.oHeight = i.height;
+		    } else {
+		        d.oWidth = mainImage.naturalWidth;
+		        d.oHeight = mainImage.naturalHeight;
+		    }
+		    return d;
+		}
+		var imgNum = 0;
+    	function x(src,num){
+    		if(num == 0){
+    			$("#carousel .previous").css("display","none");
+    			$("#carousel .next").css("display","block");
+    		}
+    		else if(num == 9 || num == maximunImg){
+    			$("#carousel .next").css("display","none");
+    			$("#carousel .previous").css("display","block");
+    		}
+    		$("#FullScreen").attr("src",src);
+    		var img = $("#FullScreen");
+    		var naturalDimension = getNatural(img);
+    		if(naturalDimension.oWidth > naturalDimension.oHeight){
+    			img.attr("style","width:100%");
+    		}
+    		else{
+    			img.attr("style","height:100%");
+    		}
+    		console.log(naturalDimension.oWidth +" x " + naturalDimension.oHeight);
+    		imgNum = num;
+    		console.log(num);
+    		$("#carousel").fadeIn();
+    		var carousel = $('#carousel');
+			var img = $('#FullScreen');
+			var alignNext = (carousel.height() - img.height())/2;
+			img.css("margin-Top",alignNext);
+    	}
+    </script>
+ <script type="text/javascript">
+		$(function(){
+			var myIscroll = new IScroll('#container', { mouseWheel: true, click: true });
+			setTimeout(function(){
+	     		myIscroll.refresh(); 
+	  		}, 500);
+		});
+	</script>
+	<script type="text/javascript">
+		function onLoad() {
+        	document.addEventListener("deviceready", onDeviceReady, false);
+    	}
+    	function onDeviceReady() {
+        	document.addEventListener("backbutton", onBackKeyDown, false);
+        	var element = document.getElementById('deviceProperties');
+    	}
+    	function onBackKeyDown() {
+    		location.href="main.html";
+    	}
+	</script>
 </head>
-<body>
+<body onload="onLoad()">
 	<div data-role="page" tabindex="0" class="ui-page ui-page-active" style="background-color: #649940; min-height: 640px;">
 		<!-- Header data -->
 		<div id="header">
-			<img src="./img/icons/logo.png" class='logo'>
+			<img src="img/icons/logo.png" class='logo'>
 			<div class="Left-Center">
 				Where's Bar
 			</div>
@@ -44,46 +182,72 @@
 		<div class="detail"></div>
 		<!-- Body data -->
 		<div id="container" style="margin-top:57px;">
-			<div class="info">
-				<div class='photo'>
-					<img class='thumb' src='./img/icons/logo2.png'>
-				</div>
-				<span class='name'></span><br><br><span class='square'></span><br>
-				<div class="rate">
-					
-				</div>
-				<div class="about">
-					
-				</div>
-				<hr style="margin-top:5px;">
-				<div id='openMess' class="msgButton">Mensagens</div>
-				<hr style="margin-top:10px;">
-				<div class = "label">
-					Fotos
-				</div>
-				<div class='photos'>
-					<div class='photo'></div><div class='photo'></div><div class='photo'></div><div class='photo'></div><div class='photo'></div>
-					<div class='photo'></div><div class='photo'></div><div class='photo'></div><div class='photo'></div><div class='photo'></div>
-				</div>
-				<hr style="margin-top:119px;">
-				<div class='label'>Promoções</div>
-				<div class='promo'>
-					
-				</div>
-				<hr style="margin-top:10px;">
-				<div class='label'>Serviços</div>
-				<div class='serv'>
-					
+			<div id="scroller">
+				<div class="info">
+					<div class='photo'>
+						<img class='thumb'>
+					</div>
+					<script type="text/javascript">
+						$(function(){
+							$("#setHot").click(function(){
+								var d = new Date();
+	    						var n = d.getHours();
+	    						var inTimeOutHots = JSON.parse($_SESSION.get("timeOutHot"));
+	    						if(inTimeOutHots[getBar()]){
+	    							inTimeOutHots[getBar()] = n + 2;
+	    						}
+	    						else{
+	    							inTimeOutHots[getBar()] = n + 2;
+	    						}
+	    						if($(this).attr("src") == "img/icons/Hot.png"){
+	    							console.log("ja com hot");
+	    						}
+	    						else{
+	    							var donee = $.toJSON(inTimeOutHots);
+	    							bar.setHot(bar.get(getBar()));
+	    							$_SESSION.set("timeOutHot",donee);
+	    							$(this).attr("src","img/icons/Hot.png");
+	    						}
+	    						
+							});
+							var map = bar.attr(bar.get(getBar()),"map");
+							$("#gmaps").attr("href","geo:"+map+"?q="+map+"("+getBar()+")");
+						});
+					</script>
+					<span class='name'><span class='barName'></span>&nbsp;<img id='setHot' src="img/icons/Hot2.png" height='16px;'></span><br><br><span class='square'></span><br>
+					<div class="rate">
+						
+					</div>
+					<div class="about">
+						
+					</div>
+					<hr style="margin-top:5px;">
+					<div id='photoLabel' class = "label">
+						Fotos
+					</div>
+					<div class='photos'>
+						
+					</div>
+					<hr id='beforePhoto' style="margin-top:119px;">
+					<div id='promoLabel' class='label'>Mensagens - </div>
+					<div class='promo'>
+						
+					</div>
+					<hr style="margin-top:10px;">
+					<div class='label'>Serviços</div>
+					<div class='serv'>
+						
+					</div>
 				</div>
 			</div>
 		</div>
 		<!-- Menu Panel -->
 		<div id="menu" data-role="panel" id="menu" data-position="right" data-display="overlay">
-			<a href="#" data-rel="close"><div id="MENU-Back"><img src="./img/icons/Back.png"><span>Voltar</span></div></a>
+			<a href="#" data-rel="close"><div id="MENU-Back"><img src="img/icons/Back.png"><span>Voltar</span></div></a>
 			<div id="MENU-Options">
-				<div class="select" href='index.html'><img src="./img/icons/Bares.png"> <span>Bares</span></div>
+				<div class="select" href='index.html'><img src="img/icons/Bares.png"> <span>Bares</span></div>
 				<hr> <!-- Quebra de linha -->
-				<div class="select" href='about.html'><img src="./img/icons/About.png"> <span>Sobre</span></div>
+				<div class="select" href='about.html'><img src="img/icons/About.png"> <span>Sobre</span></div>
 				<!-- Menu Buttons Script -->
 				<script type="text/javascript">
 					$("#MENU-Options .select").click(function(e){
@@ -109,25 +273,109 @@
 		<!-- Messages Script -->
 		<script type="text/javascript">
 			$(function(){
-				var messages = JSON.parse($_SESSION.get("messages_"+getBar()));
+				var d = new Date();
+    			var day = d.getDate();
+    			var month = d.getMonth() + 1;
+    			var year = d.getFullYear();
+    			if(month < 10){
+    				month = "0" + month;
+    			}
+    			if(day < 10){
+    				day = "0" + day;
+    			}
+				$("#promoLabel").html("Mensagens - "+ day+"/"+month + "/" + year);
+				var messages = JSON.parse($_SESSION.get("tempMess"));
+				console.log(messages);
+				var counter = 0;
 				for(var i = 0;i<messages.length;i++){
-					var messagesData = message.parse(messages[i]);
-					
-					$("#messages .content").append("<span class='PromoLabel'>"+messagesData["title"]+"</span><br><span class='description'>"+messagesData["content"]+"</span><hr>");
+					var messageBarId = messages[i].fields.estabelecimento;
+					var text = messages[i].fields.texto;
+					if(messageBarId == bar.get(getBar())){
+						console.log(messageBarId);
+						$("#container .info .promo").append("<span class='description'>"+(i+1)+" - "+text+"</span><br>");
+						counter++;
+					}
 				}
+				if(counter == 0){
+					$("#container .info .promo").html("<span class='description'>Sem mensagens</span>");
+				}
+				var readed = JSON.parse($_SESSION.get("readMessages"));
+				readed[getBar()] = counter;
+				var donee = $.toJSON(readed);
+				$_SESSION.set("readMessages",donee);
+
 			});
 		</script>
-		<!-- Messages Popup -->
-		<div id="block"></div>
-		<div id = "messages">
-			<span class="popLabel">Mensagens</span><br>
-			<span class='date'>23/04/2014</span>
+		<script type="text/javascript">
+			$(function(){
+				var next = $('#carousel .next .label');
+				var previous = $('#carousel .previous .label');
+				var carousel = $('#carousel');
+				var alignNext = (carousel.height() - next.height())/2;
+				var alignPrevious = (carousel.height() - previous.height())/2;
+				console.log(alignNext);
+				console.log(alignPrevious);
+				next.css("margin-Top",alignNext);
+				previous.css("margin-Top",alignPrevious);
+
+
+				$('#carousel .right .X').click(function(){
+					$('#carousel').fadeOut();
+				});
+				$('#carousel .next').click(function(){
+					if(imgNum + 1 == 9 || imgNum + 1 == maximunImg){
+						$('#carousel .next').fadeOut(100);
+					}
+					$('#carousel .previous').fadeIn();
+					var photos = JSON.parse($_SESSION.get("photos_"+bar.get(getBar())));
+					var photoloc = "http://189.124.190.90:8000/static/"+photos.fotos[imgNum + 1];
+					$("#FullScreen").attr("src",photoloc);
+		    		var img = $("#FullScreen");
+		    		var naturalDimension = getNatural(img);
+		    		if(naturalDimension.oWidth > naturalDimension.oHeight){
+		    			img.attr("style","width:100%");
+		    		}
+		    		else{
+		    			img.attr("style","height:100%");
+		    		}
+		    		var carousel = $('#carousel');
+					var img = $('#FullScreen');
+					var alignNext = (carousel.height() - img.height())/2;
+					img.css("margin-Top",alignNext);
+		    		imgNum = imgNum + 1;
+					console.log(photos.fotos[imgNum]);
+				});
+				$('#carousel .previous').click(function(){
+					if(imgNum - 1 == 0){
+						$('#carousel .previous').fadeOut(100);
+					}
+					$('#carousel .next').fadeIn();
+					var photos = JSON.parse($_SESSION.get("photos_"+bar.get(getBar())));
+					var photoloc = "http://189.124.190.90:8000/static/"+photos.fotos[imgNum - 1];
+					$("#FullScreen").attr("src",photoloc);
+		    		var img = $("#FullScreen");
+		    		var naturalDimension = getNatural(img);
+		    		if(naturalDimension.oWidth > naturalDimension.oHeight){
+		    			img.attr("style","width:100%");
+		    		}
+		    		else{
+		    			img.attr("style","height:100%");
+		    		}
+		    		var carousel = $('#carousel');
+					var img = $('#FullScreen');
+					var alignNext = (carousel.height() - img.height())/2;
+					img.css("margin-Top",alignNext);
+		    		imgNum = imgNum - 1;
+				});
+			});
+		</script>
+		<div id='carousel'>
 			<div class="right">
-				<a href="#" id='closeMess' style="background-color:#649940; border-color:#fff;" class="ui-btn ui-icon-delete ui-nodisc-icon ui-btn-icon-notext ui-btn-b ui-corner-all menu">No text</a>
+				<a href="#" id='X' class="X ui-btn ui-icon-delete ui-nodisc-icon ui-btn-icon-notext ui-btn-b ui-corner-all menu">No text</a>
 			</div>
-			<div class='content'>
-				
-			</div>
+			<img id="FullScreen" style="position:absolute;top:0px;left:0px;" src="">
+			<div class='next'><span class='label'><img src="img/icons/next.png"></span></div>
+			<div class='previous'><span class='label'><img src="img/icons/previous.png"></span></span></div>
 		</div>
 	</div>
 </body>
