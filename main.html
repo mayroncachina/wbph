@@ -197,7 +197,7 @@
 			$(function(){
 				$(".bar").click(function(){
 					console.log("bar");
-					location.href = "profile.html#" + $(this).attr("id");
+					$.mobile.changePage( "profile.html#" + $(this).attr("id"), { transition: "slide" });
 				});
 			});
 		</script>
@@ -212,7 +212,8 @@
 				<script type="text/javascript">
 					$("#MENU-Options .select").click(function(e){
 						e.preventDefault();
-						location.href = $(this).attr("href");
+						$.mobile.changePage( $(this).attr("href");, { transition: "slide" });
+						
 					});
 				</script>
 			</div>
@@ -231,7 +232,7 @@
                     }
 				});
 			</script>
-			<span id='loadMess'>xxxx</span>
+			<span id='loadMess'>Aguarde...</span>
 			<script type="text/javascript">
 				$('img .thumb').imageCache();
 			</script>
