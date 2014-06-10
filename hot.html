@@ -6,10 +6,9 @@
 	<!-- LOAD JQUERY UI LIBS -->
 	<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.0.min.css"/>
 	<script src="js/jquery.js"></script>
-	<script type="application/javascript" src="js/iscroll-lite.js?v4"></script>
+	<script src="js/iscroll.js"></script>
     <script src="js/common.js"></script>
     <script src="js/cordova.js"></script>
-    <script src="js/views.js"></script>
     <script src="js/jquery.imageCache.js"></script>
     <script src="js/jquery.mobile-1.4.0.min.js"></script>
     <!-- LOAD CUSTOM LIBS -->
@@ -123,32 +122,55 @@
 					},200);
     			}
     		},300);
+			var x = new Array();
+			if(!$_SESSION.get("tempHots")){
+			    console.log("NO HOTS");
+			}
+			else{
+				var hotsBars = 0;
+				var x = new Array();
+				var bars = JSON.parse(localStorage.getItem("tempHots"));
+				for(var i=0; i < bars.length; i++){
+				    var hot = rpl(bars[i],'\'','"');
+				    var jHot = JSON.parse(hot);
+				    if(jHot.hot > 0){
+				        x[i] = jHot.hot + ":" + jHot.id;
+				        hotsBars++;
+				    }
+				}
+
+				x.sort();
+				console.log(x);
+				if(x.length > 0){
+				    for(var i = 0; i < hotsBars; i++){
+				        var id = matrix(x[i])['id'];
+				        if(i < 4){
+				            $("#hotScroller").append("<div class='bar' id='"+ bar.attr(id,"name") +"'><div class='photo'><div id='"+id+"' class='counter'>"+countMessages(id)+"</div><img class='thumb' src='http://107.170.191.250:8080/static/"+bar.attr(id,"image")+"'></div><span class='name'>"+bar.attr(id,"name")+"</span><br><br><span class='square'>"+bar.attr(id,"square")+"</span><img class='hot' src='img/icons/Hot.png'></div><br class='break'><hr>");
+				        }
+				        else{
+				            var opacity = (1/(x.length - 4))* i;
+				            $("#hotScroller").append("<div class='bar' id='"+ bar.attr(id,"name") +"'><div class='photo'><div id='"+id+"' class='counter'>"+countMessages(id)+"</div><img class='thumb' src='http://107.170.191.250:8080/static/"+bar.attr(id,"image")+"'></div><span class='name'>"+bar.attr(id,"name")+"</span><br><br><span class='square'>"+bar.attr(id,"square")+"</span><img class='hot' src='img/icons/Hot2.png' style='opacity:"+opacity+"'></div><br class='break'><hr>");
+				        }
+				    }
+				}
+				else{
+				    $("#hotScroller").append("<span style='position:absolute;top:5px;width:100%;text-align:center;'>Nenhum bar bombando no momento</span>");
+				}
+			}
     	});
     </script>
     <script type="text/javascript">
+    	var myIscroll;
     	$(function(){
-    		listBars();
-    	})
-	</script>
-	<script type="text/javascript">
-		listBars();
-		var myScroll;
-		var yourScroll;
-		function loaded() {
-			myScroll = new iScroll('container');
-		}
-
-		document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
-
-		document.addEventListener('DOMContentLoaded', loaded, false);
-
+    		myIscroll = new IScroll('#container', { mouseWheel: true, click: true});
+    	});
 	</script>
 	<script type="text/javascript">
 		function onLoad() {
-			myScroll.refresh();
+			myIscroll.refresh();
         	document.addEventListener("deviceready", onDeviceReady, false);
     	}
-    	function onDeviceReady() { 
+    	function onDeviceReady() {
         	document.addEventListener("backbutton", onBackKeyDown, false);
         	var element = document.getElementById('deviceProperties');
         		if(!$_SESSION.get("deviceName")){
@@ -171,34 +193,40 @@
 </head>
 <body onload="onLoad()">
 	<div id='main' data-role="page" tabindex="0" class="ui-page ui-page-active" style="background-color: #649940; min-height: 640px;">
-		<!-- Header data -->
-		<div id="header">
-			<img src="img/icons/logo.png" class='logo'>
-			<div class="Left-Center">
-				Where's Bar
-			</div>
-			<div class="right">
-				<a href="#menu"class="ui-btn ui-icon-bars ui-nodisc-icon ui-btn-icon-notext ui-btn-b ui-corner-all menu">No text</a>
-			</div>
-		</div>
-		<div class="detail"></div>
-		<!-- Tabs !Repeat if need -->
-		<div id="nav">
-			<div class="detail"></div>
-			<div class="tabAll"><img src="img/icons/beer.png" class='tabIcon'>Todos</div>
-			<div class="tabHot"><img src="img/icons/Hot.png" class='tabIcon'> Hot</div>
-		</div>
-		<!-- Change Tab Code -->
-		<script type="text/javascript">
-			
-		</script>
+		
 		<!-- Body data -->
-		<div id="container">
+		<div id="container" style='margin-top:15px;'>
 			<div id="scroller">
 				<span id='updade'>Continue puxando para atualizar</span>
-				<span id='values'></span>
 			</div>
 		</div>
+		<!-- Bar Click -->
+		<script type="text/javascript">
+			$(function(){
+				var lastBar = "";
+				$(".bar").click(function(){
+					var thisBar = $(this).attr("id");
+					console.log("bar");
+					if(thisBar != lastBar){
+						lastBar = thisBar;
+						$("#profileContent").html("<iframe id='profilePage' class='frame' src='profile.html#"+ thisBar +"'></iframe>");
+						$.mobile.loading("show");
+						var checkPro = setInterval(function(){
+							if($_SESSION.get("Profile") == "LOADED"){
+								$_SESSION.set("Profile","OPENED");
+								$.mobile.loading("hide");
+								$.mobile.changePage( $("#profile"), { transition: "none" });
+								clearInterval(checkPro);
+							}
+						},50);
+					}
+					else{
+						$.mobile.changePage( $("#profile"), { transition: "none" });
+					}
+					//location.href =  "profile.html#" + $(this).attr("id");
+				});
+			});
+		</script>
 		<!-- Menu Panel -->
 		<div id="menu" data-role="panel" class="menu" data-position="right" data-display="overlay">
 			<a href="#" data-rel="close"><div id="MENU-Back"><img src="img/icons/Back.png"><span>Voltar</span></div></a>
@@ -258,91 +286,6 @@
 		<div id='profileContent'>
 		</div>
 		<div id="menupro" data-role="panel" class="menu" data-position="right" data-display="overlay">
-			<a href="#" data-rel="close"><div id="MENU-Back"><img src="img/icons/Back.png"><span>Voltar</span></div></a>
-			<div id="MENU-Options">
-				<div class="select" href='#main'><img src="img/icons/Bares.png"> <span>Bares</span></div>
-				<hr> <!-- Quebra de linha -->
-				<div class="select" href='#about'><img src="img/icons/About.png"> <span>Sobre</span></div>
-				<hr> <!-- Quebra de linha -->
-				<div class="select" href='#feedback'><img src="img/icons/Feedback.png"> <span>Feedback</span></div>
-				<!-- Menu Buttons Script -->
-				<script type="text/javascript">
-					$("#MENU-Options .select").click(function(e){
-						e.preventDefault();
-						var redir = $(this).attr("href");
-						$.mobile.changePage( $(redir), { transition: "none" });
-					});
-				</script>
-			</div>
-		</div>
-	</div>
-	<div data-role="page" id='about' tabindex="0" class="ui-page" style="background-color: #649940; min-height: 640px;">
-		<!-- Header data -->
-		<div id="header">
-			<img src="img/icons/logo.png" class='logo'>
-			<div class="Left-Center">
-				Where's Bar
-			</div>
-			<div class="right">
-				<a href="#menuabt" class="ui-btn ui-icon-bars ui-nodisc-icon ui-btn-icon-notext ui-btn-b ui-corner-all menu">No text</a>
-			</div>
-		</div>
-		<div class="detail"></div>
-	
-		<div id="container" style="margin-top:55px; text-align:center; padding:20px;">
-			<br>
-			<img src="./img/icons/logo.png" height="64px">
-			<h3>+ Informação + Diversão</h3>
-			<p>
-				
-				Esse é apenas o inicio de um grande projeto!<br/> Aguarde! Grandes novidades estão para vir...
-				<h4>Obrigado por Baixar</h4>
-			</p>
-		</div>
-
-		<div id="menuabt" data-role="panel" class="menu" data-position="right" data-display="overlay">
-			<a href="#" data-rel="close"><div id="MENU-Back"><img src="img/icons/Back.png"><span>Voltar</span></div></a>
-			<div id="MENU-Options">
-				<div class="select" href='#main'><img src="img/icons/Bares.png"> <span>Bares</span></div>
-				<hr> <!-- Quebra de linha -->
-				<div class="select" href='#about'><img src="img/icons/About.png"> <span>Sobre</span></div>
-				<hr> <!-- Quebra de linha -->
-				<div class="select" href='#feedback'><img src="img/icons/Feedback.png"> <span>Feedback</span></div>
-				<!-- Menu Buttons Script -->
-				<script type="text/javascript">
-					$("#MENU-Options .select").click(function(e){
-						e.preventDefault();
-						var redir = $(this).attr("href");
-						$.mobile.changePage( $(redir), { transition: "none" });
-					});
-				</script>
-			</div>
-		</div>
-	</div>
-	<div data-role="page" id='feedback' tabindex="0" class="ui-page" style="background-color: #649940; min-height: 640px;">
-		<!-- Header data -->
-		<div id="header">
-			<img src="img/icons/logo.png" class='logo'>
-			<div class="Left-Center">
-				Where's Bar
-			</div>
-			<div class="right">
-				<a href="#menufdb" class="ui-btn ui-icon-bars ui-nodisc-icon ui-btn-icon-notext ui-btn-b ui-corner-all menu">No text</a>
-			</div>
-		</div>
-		<div class="detail"></div>
-	
-		<div id="container" style="margin-top:55px; text-align:center; padding:20px;">
-			<span id='feedbackForm'>
-				Ouve algum erro ?<br>
-				<form id='feedback'>
-					<input type='text' id='message'><br>
-					<input type='submit' value='envie seu feedback'>
-				</form>
-			</span>
-		</div>
-
-		<div id="menufdb" data-role="panel" class="menu" data-position="right" data-display="overlay">
 			<a href="#" data-rel="close"><div id="MENU-Back"><img src="img/icons/Back.png"><span>Voltar</span></div></a>
 			<div id="MENU-Options">
 				<div class="select" href='#main'><img src="img/icons/Bares.png"> <span>Bares</span></div>

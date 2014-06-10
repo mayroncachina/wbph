@@ -159,6 +159,7 @@
 			myIscroll.refresh();
         	document.addEventListener("deviceready", onDeviceReady, false);
         	$.mobile.loading("hide");
+        	$_SESSION.set("Profile","LOADED");
     	}
     	function onDeviceReady() {
         	document.addEventListener("backbutton", onBackKeyDown, false);
@@ -188,19 +189,9 @@
 </head>
 <body onload="onLoad()">
 	<div data-role="page" tabindex="0" class="ui-page ui-page-active" style="background-color: #649940; min-height: 640px;">
-		<!-- Header data -->
-		<div id="header">
-			<img src="img/icons/logo.png" class='logo'>
-			<div class="Left-Center">
-				Where's Bar <span id='off'></span>
-			</div>
-			<div class="right">
-				<a href="#menu" class="ui-btn ui-icon-bars ui-nodisc-icon ui-btn-icon-notext ui-btn-b ui-corner-all menu">No text</a>
-			</div>
-		</div>
-		<div class="detail"></div>
+		
 		<!-- Body data -->
-		<div id="container" style="margin-top:57px;">
+		<div id="container" style="margin-top:15px;">
 			<div id="scroller">
 				<div id='offline'>Você está offline, Algumas informações podem estar desatualizadas</div>
 				<div class="info">
@@ -278,23 +269,7 @@
 			</div>
 		</div>
 		<!-- Menu Panel -->
-		<div id="menu" data-role="panel" id="menu" data-position="right" data-display="overlay">
-			<a href="#" data-rel="close"><div id="MENU-Back"><img src="img/icons/Back.png"><span>Voltar</span></div></a>
-			<div id="MENU-Options">
-				<div class="select" href='index.html'><img src="img/icons/Bares.png"> <span>Bares</span></div>
-				<hr> <!-- Quebra de linha -->
-				<div class="select" href='about.html'><img src="img/icons/About.png"> <span>Sobre</span></div>
-				<hr> <!-- Quebra de linha -->
-				<div class="select" href='feedback.html'><img src="img/icons/Feedback.png"> <span>Feedback</span></div>
-				<!-- Menu Buttons Script -->
-				<script type="text/javascript">
-					$("#MENU-Options .select").click(function(e){
-						e.preventDefault();
-						location.href = $(this).attr("href");
-					});
-				</script>
-			</div>
-		</div>
+		
 		<!-- Message Open/Close -->
 		<script type="text/javascript">
 			$(function(){

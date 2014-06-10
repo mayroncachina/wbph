@@ -1,5 +1,7 @@
+
 function indexof(str,cha){
     var index = -1;
+    console.log(cha.length);
     for(var i = 0;i<cha.length;i++){
         if(cha[i] == str){
             return i;
