@@ -15,25 +15,26 @@
     <!-- LOAD CUSTOM LIBS -->
     <link rel="stylesheet" type="text/css" href="css/themes/default/custom.css"/>
     <script type="text/javascript">
-			$(function(){
-				if(!$_SESSION.get("UserSetStar")){
-					$_SESSION.set("UserSetStar","{}");
-				}
-				if(!$_SESSION.get("timeOutHot")){
-					$_SESSION.set("timeOutHot","{}");
-				}
-				if(!$_SESSION.get("readMessages")){
-					$_SESSION.set("readMessages","{}");
-				}
-				var deg = 5;
-				setInterval(function(){
-					$('#load').css("transform", "rotate("+deg+"deg)");
-					deg++;
-				},1);
-			});
-		</script>
+		$(function(){
+			if(!$_SESSION.get("UserSetStar")){
+				$_SESSION.set("UserSetStar","{}");
+			}
+			if(!$_SESSION.get("timeOutHot")){
+				$_SESSION.set("timeOutHot","{}");
+			}
+			if(!$_SESSION.get("readMessages")){
+				$_SESSION.set("readMessages","{}");
+			}
+			var deg = 5;
+			setInterval(function(){
+				$('#load').css("transform", "rotate("+deg+"deg)");
+				deg++;
+			},1);
+		});
+	</script>
     <script type="text/javascript">
     	$(function(){
+/* 
     		var heightLoad = $('#load').height();
 			var docHeight = $(document).height();
 			var padding = (docHeight - heightLoad) / 2;
@@ -74,6 +75,7 @@
 	            }
     		},loop);
     		var updating = 0
+   		
     		setInterval(function(){
     			var sc = $("#scroller").offset().top;
     			if(sc > 190 && updating == 0){
@@ -123,14 +125,15 @@
 					},200);
     			}
     		},300);
+*/
     	});
     </script>
     <script type="text/javascript">
+
     	$(function(){
     		listBars();
     	})
-	</script>
-	<script type="text/javascript">
+
 		listBars();
 		var myScroll;
 		var yourScroll;
@@ -138,33 +141,34 @@
 			myScroll = new iScroll('container');
 		}
 
-		document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
-
-		document.addEventListener('DOMContentLoaded', loaded, false);
-
-	</script>
-	<script type="text/javascript">
 		function onLoad() {
 			myScroll.refresh();
-        	document.addEventListener("deviceready", onDeviceReady, false);
     	}
+        
+		document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+		document.addEventListener('DOMContentLoaded', loaded, false);
+
+        document.addEventListener("deviceready", onDeviceReady, false);
+        document.addEventListener("backbutton", onBackKeyDown, false);
+    	
     	function onDeviceReady() { 
-        	document.addEventListener("backbutton", onBackKeyDown, false);
         	var element = document.getElementById('deviceProperties');
         	alert(device.name)
-        		if(!$_SESSION.get("deviceName")){
-        			$_SESSION.set("deviceName",device.name);
-        		}
-        		if(!$_SESSION.get("devicePlatForm")){
-        			$_SESSION.set("devicePlatForm",device.platform);
-        		}
-        		if(!$_SESSION.get("deviceUUID")){
-        			$_SESSION.set("deviceUUID",device.uuid);
-        		}
-        		if(!$_SESSION.get("deviceVersion")){
-        			$_SESSION.set("deviceVersion",device.version);
-        		}
-        		window.plugin.notification.local.add({ message: 'Great app!' });
+    		/*
+    		if(!$_SESSION.get("deviceName")){
+    			$_SESSION.set("deviceName",device.name);
+    		}
+    		if(!$_SESSION.get("devicePlatForm")){
+    			$_SESSION.set("devicePlatForm",device.platform);
+    		}
+    		if(!$_SESSION.get("deviceUUID")){
+    			$_SESSION.set("deviceUUID",device.uuid);
+    		}
+    		if(!$_SESSION.get("deviceVersion")){
+    			$_SESSION.set("deviceVersion",device.version);
+    		}
+    		window.plugin.notification.local.add({ message: 'Great app!' });
+    		*/
     	}
     	function onBackKeyDown() {
     		return false;
