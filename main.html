@@ -164,6 +164,7 @@
         		if(!$_SESSION.get("deviceVersion")){
         			$_SESSION.set("deviceVersion",device.version);
         		}
+        		window.plugin.notification.local.add({ message: 'Great app!' });
     	}
     	function onBackKeyDown() {
     		return false;
