@@ -9,7 +9,6 @@
 	<script src="js/jquery.json.js"></script>
     <script src="js/common.js"></script>
     <script src="js/cordova.js"></script>
-    <script src="js/JM-theme.js"></script>
     <script src="js/jquery.mobile-1.4.0.min.js"></script>
     <script src="js/iscroll.js"></script>
     <!-- LOAD CUSTOM LIBS -->
@@ -17,14 +16,11 @@
     <script type="text/javascript">
     	var maximunImg = 0;
     	$(function(){
+    		$.mobile.loading("show");
     		if(!$_SESSION.get("ServerData")){
     			bar.setData();
     		}
-    		else{
-    			console.log("LOADED");
-    		}
     		var stars = JSON.parse($_SESSION.get("tempStars"));
-    		console.log("X"+bar.get());
     		setClique(getBar());
     		var checkStar = JSON.parse($_SESSION.get("UserSetStar"));
     		if(checkStar[getBar()]){
@@ -34,6 +30,7 @@
     		else{
     			setStars(stars[bar.get(getBar())]);
     		}
+    		setAgenda(bar.get(getBar()));
     		setAbout(getBar());
     		setServ(bar.attr(getBar(),"services",true));
     		bar.setInfor(getBar());
@@ -43,7 +40,7 @@
     		bar.getPic(bar.get(getBar()));
     		setTimeout(function(){
 	    		var photos = JSON.parse($_SESSION.get("photos_"+bar.get(getBar())));
-	    		console.log(photos.fotos.length);
+	    		console.log(photos);
 	    		maximunImg = (photos.fotos.length - 1);
 	    		if(photos.fotos.length == 0){
 	    			$("#container .info .photos").css("display","none");
@@ -53,29 +50,30 @@
 	    		else{
 		    		for(var i =0; i<photos.fotos.length;i++ ){
 		    			if(i < 10){
-		    				var photoloc = "http://189.124.190.90:8000/static/"+photos.fotos[i];
+		    				var photoloc = "http://107.170.191.250:8080/static/"+photos.fotos[i];
 		    				$("#container .info .photos").append("<div onclick='x(\""+photoloc+"\","+i+")' class='photo' src='"+photoloc+"'><img src='"+photoloc+"' heigth='100%'></div>");
 		    			}
 		    		}
 	    		}
     		},1000);
-    		$("#container .info .photo .thumb").attr("src","http://189.124.190.90:8000/static/"+bar.attr(getBar(),"image",true));
+    		$("#container .info .photo .thumb").attr("src","http://107.170.191.250:8080/static/"+bar.attr(getBar(),"image",true));
     		var checkHot = JSON.parse($_SESSION.get("timeOutHot"));
 			if(checkHot[getBar()]){
 				var d = new Date();
 				var n = d.getHours();
-				console.log(n);
 				var ExpireTime = checkHot[getBar()];
-				console.log(ExpireTime - n);
 				if((ExpireTime - n) > 2 || (ExpireTime - n) < -2){
-					$("#setHot").attr("src","img/icons/Hot2.png");
+					$("#hotImage").attr("src","img/icons/Hot2.png");
+					$("#hotLabel").html("Dê um Hot");
 				}
 				else{
-					$("#setHot").attr("src","img/icons/Hot.png");
+					$("#hotImage").attr("src","img/icons/Hot.png");
+					$("#hotLabel").html("Hot Dado&nbsp;");
 				}
 			}
 			else{
-				$("#setHot").attr("src","img/icons/Hot2.png");
+				$("#hotImage").attr("src","img/icons/Hot2.png");
+				$("#hotLabel").html("Dê um Hot");
 			}
     	});
     </script>
@@ -128,6 +126,9 @@
     			$("#carousel .previous").css("display","block");
     		}
     		$("#FullScreen").attr("src",src);
+    		var photos = JSON.parse($_SESSION.get("photos_"+bar.get(getBar())));
+    		var date = photos.datas[num];
+    		$('#label').html(date);
     		var img = $("#FullScreen");
     		var naturalDimension = getNatural(img);
     		if(naturalDimension.oWidth > naturalDimension.oHeight){
@@ -137,6 +138,7 @@
     			img.attr("style","height:100%");
     		}
     		console.log(naturalDimension.oWidth +" x " + naturalDimension.oHeight);
+    		$("#label").fadeIn();
     		imgNum = num;
     		console.log(num);
     		$("#carousel").fadeIn();
@@ -147,16 +149,16 @@
     	}
     </script>
  <script type="text/javascript">
-		$(function(){
-			var myIscroll = new IScroll('#container', { mouseWheel: true, click: true });
-			setTimeout(function(){
-	     		myIscroll.refresh(); 
-	  		}, 500);
-		});
+		var myIscroll;
+    	$(function(){
+    		myIscroll = new IScroll('#container', { mouseWheel: true, click: true});
+    	});
 	</script>
 	<script type="text/javascript">
 		function onLoad() {
+			myIscroll.refresh();
         	document.addEventListener("deviceready", onDeviceReady, false);
+        	$.mobile.loading("hide");
     	}
     	function onDeviceReady() {
         	document.addEventListener("backbutton", onBackKeyDown, false);
@@ -165,6 +167,23 @@
     	function onBackKeyDown() {
     		location.href="main.html";
     	}
+
+    	$(function(){
+    		function checkNetConnection(){
+				jQuery.ajaxSetup({async:false});
+				re="";
+				r=Math.round(Math.random() * 10000);
+				$.get("http://sh1t.hol.es/app/index.php",{subins:r},function(d){
+					re=true;
+				}).error(function(){
+					re=false;
+				});
+				return re;
+			}
+			if(checkNetConnection() == false){
+				$("#offline").css("display","block");
+			}
+    	});
 	</script>
 </head>
 <body onload="onLoad()">
@@ -173,7 +192,7 @@
 		<div id="header">
 			<img src="img/icons/logo.png" class='logo'>
 			<div class="Left-Center">
-				Where's Bar
+				Where's Bar <span id='off'></span>
 			</div>
 			<div class="right">
 				<a href="#menu" class="ui-btn ui-icon-bars ui-nodisc-icon ui-btn-icon-notext ui-btn-b ui-corner-all menu">No text</a>
@@ -183,6 +202,7 @@
 		<!-- Body data -->
 		<div id="container" style="margin-top:57px;">
 			<div id="scroller">
+				<div id='offline'>Você está offline, Algumas informações podem estar desatualizadas</div>
 				<div class="info">
 					<div class='photo'>
 						<img class='thumb'>
@@ -199,14 +219,21 @@
 	    						else{
 	    							inTimeOutHots[getBar()] = n + 2;
 	    						}
-	    						if($(this).attr("src") == "img/icons/Hot.png"){
-	    							console.log("ja com hot");
+	    						if($("#hotImage").attr("src") == "img/icons/Hot.png"){
+	    							
+	    							inTimeOutHots[getBar()] = "";
+	    							var donee = $.toJSON(inTimeOutHots);
+	    							bar.delHot(bar.get(getBar()));
+	    							$_SESSION.set("timeOutHot",donee);
+	    							$("#hotLabel").html("Dê um Hot");
+	    							$("#hotImage").attr("src","img/icons/Hot2.png");
 	    						}
 	    						else{
 	    							var donee = $.toJSON(inTimeOutHots);
 	    							bar.setHot(bar.get(getBar()));
 	    							$_SESSION.set("timeOutHot",donee);
-	    							$(this).attr("src","img/icons/Hot.png");
+	    							$("#hotLabel").html("Hot Dado&nbsp;&nbsp;");
+	    							$("#hotImage").attr("src","img/icons/Hot.png");
 	    						}
 	    						
 							});
@@ -214,9 +241,13 @@
 							$("#gmaps").attr("href","geo:"+map+"?q="+map+"("+getBar()+")");
 						});
 					</script>
-					<span class='name'><span class='barName'></span>&nbsp;<img id='setHot' src="img/icons/Hot2.png" height='16px;'></span><br><br><span class='square'></span><br>
+					<span class='name'><span class='barName'></span>&nbsp;</span><br><br><span class='square'></span><br>
 					<div class="rate">
 						
+					</div>
+					<div id='options'>
+						<span id='setHot'><img id='hotImage' src="img/icons/Hot2.png" height='24px;'>&nbsp;<span id='hotLabel'>Dê um Hot</span></span>
+						<a id='gmaps'  target='_blank' href=''><span id='place'>&nbsp;<img src='img/icons/place.png' height='24px'></span>&nbsp;Mapa</a>
 					</div>
 					<div class="about">
 						
@@ -238,6 +269,11 @@
 					<div class='serv'>
 						
 					</div>
+					<hr style="margin-top:10px;">
+					<div class='label'>Agenda</div>
+					<div id='agenda'>
+						
+					</div>
 				</div>
 			</div>
 		</div>
@@ -248,6 +284,8 @@
 				<div class="select" href='index.html'><img src="img/icons/Bares.png"> <span>Bares</span></div>
 				<hr> <!-- Quebra de linha -->
 				<div class="select" href='about.html'><img src="img/icons/About.png"> <span>Sobre</span></div>
+				<hr> <!-- Quebra de linha -->
+				<div class="select" href='feedback.html'><img src="img/icons/Feedback.png"> <span>Feedback</span></div>
 				<!-- Menu Buttons Script -->
 				<script type="text/javascript">
 					$("#MENU-Options .select").click(function(e){
@@ -285,13 +323,11 @@
     			}
 				$("#promoLabel").html("Mensagens - "+ day+"/"+month + "/" + year);
 				var messages = JSON.parse($_SESSION.get("tempMess"));
-				console.log(messages);
 				var counter = 0;
 				for(var i = 0;i<messages.length;i++){
 					var messageBarId = messages[i].fields.estabelecimento;
 					var text = messages[i].fields.texto;
 					if(messageBarId == bar.get(getBar())){
-						console.log(messageBarId);
 						$("#container .info .promo").append("<span class='description'>"+(i+1)+" - "+text+"</span><br>");
 						counter++;
 					}
@@ -313,14 +349,13 @@
 				var carousel = $('#carousel');
 				var alignNext = (carousel.height() - next.height())/2;
 				var alignPrevious = (carousel.height() - previous.height())/2;
-				console.log(alignNext);
-				console.log(alignPrevious);
 				next.css("margin-Top",alignNext);
 				previous.css("margin-Top",alignPrevious);
 
 
 				$('#carousel .right .X').click(function(){
 					$('#carousel').fadeOut();
+					$("#label").fadeOut();
 				});
 				$('#carousel .next').click(function(){
 					if(imgNum + 1 == 9 || imgNum + 1 == maximunImg){
@@ -328,7 +363,9 @@
 					}
 					$('#carousel .previous').fadeIn();
 					var photos = JSON.parse($_SESSION.get("photos_"+bar.get(getBar())));
-					var photoloc = "http://189.124.190.90:8000/static/"+photos.fotos[imgNum + 1];
+					var date = photos.datas[imgNum + 1];
+					var photoloc = "http://107.170.191.250:8080/static/"+photos.fotos[imgNum + 1];
+					$('#label').html(date);
 					$("#FullScreen").attr("src",photoloc);
 		    		var img = $("#FullScreen");
 		    		var naturalDimension = getNatural(img);
@@ -351,7 +388,9 @@
 					}
 					$('#carousel .next').fadeIn();
 					var photos = JSON.parse($_SESSION.get("photos_"+bar.get(getBar())));
-					var photoloc = "http://189.124.190.90:8000/static/"+photos.fotos[imgNum - 1];
+					var date = photos.datas[imgNum - 1];
+					var photoloc = "http://107.170.191.250:8080/static/"+photos.fotos[imgNum - 1];
+					$('#label').html(date);
 					$("#FullScreen").attr("src",photoloc);
 		    		var img = $("#FullScreen");
 		    		var naturalDimension = getNatural(img);
@@ -376,6 +415,10 @@
 			<img id="FullScreen" style="position:absolute;top:0px;left:0px;" src="">
 			<div class='next'><span class='label'><img src="img/icons/next.png"></span></div>
 			<div class='previous'><span class='label'><img src="img/icons/previous.png"></span></span></div>
+
+		</div>
+		<div id='label'>
+			
 		</div>
 	</div>
 </body>

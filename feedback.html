@@ -33,14 +33,33 @@
 		<div class="detail"></div>
 		<!-- Body data -->
 		<div id="container" style="margin-top:57px; text-align:center; padding:20px;">
-			<br>
-			<img src="./img/icons/logo.png" height="64px">
-			<h3>+ Informação + Diversão</h3>
-			<p>
-				
-				Esse é apenas o inicio de um grande projeto!<br/> Aguarde! Grandes novidades estão para vim...
-				<h4>Obrigado por Baixar</h4>
-			</p>
+			<span id='feedbackForm'>
+				Ouve algum erro ?<br>
+				<form id='feedback'>
+					<input type='text' id='message'><br>
+					<input type='submit' value='envie seu feedback'>
+				</form>
+			</span>
+			<script type="text/javascript">
+			var sended = false;
+				$(function(){
+					$("#feedback").bind('submit',function(){
+						var message = $('#message').val();
+						$("#feedbackForm").html("Enviando...");
+						$.ajax({
+					        type: 'GET',
+					        url: "http://107.170.191.250:8080/webservices/feedback/?name="+ message,
+					        dataType: 'text',
+					        crossDomain: true,
+					        success: function(data, ts, xhr){
+					        	sended = true;
+					       		$("#feedbackForm").html("Sua mensagem foi enviada<br>Obrigado pela ajuda, vamos nos esforçar para que o erro seja corrigido o mais rápido possível");
+					        }
+					    });
+						return false;
+					});
+				});
+			</script>
 		</div>
 		<!-- Menu Panel -->
 		<div id="menu" data-role="panel" id="menu" data-position="right" data-display="overlay">
@@ -49,9 +68,9 @@
 				<div class="select" href='index.html'><img src="./img/icons/Bares.png"> <span>Bares</span></div>
 				<hr> <!-- Quebra de linha -->
 				<div class="select" href='#'><img src="./img/icons/About.png"> <span>Sobre</span></div>
-				<!-- Menu Buttons Script -->
 				<hr> <!-- Quebra de linha -->
 				<div class="select" href='feedback.html'><img src="img/icons/Feedback.png"> <span>Feedback</span></div>
+				<!-- Menu Buttons Script -->
 				<script type="text/javascript">
 					$("#MENU-Options .select").click(function(e){
 						e.preventDefault();

@@ -48,10 +48,10 @@
     		else{
     			console.log();
     		}
-		    var loop = 180000;
+		    var loop = 60000;
 		    var StatusI = window.navigator.onLine;
 		    if(!StatusI){
-		    	navigator.app.exitApp();
+		    	// navigator.app.exitApp();
 		    }
 		    bar.getHot();
 			bar.getStar();
@@ -72,8 +72,57 @@
 	            	$("#"+bars[i].pk).html(countMessages(bars[i].pk))
 	            }
     		},loop);
-
-    		var navWidth = sub($("#nav").css("width"),"p");
+    		var updating = 0
+    		setInterval(function(){
+    			var sc = $("#scroller").offset().top;
+    			if(sc > 190 && updating == 0){
+    				console.log("updade");
+    				updating = 1;
+    				$("#updade").html("Atualizando");
+    				setTimeout(function(){
+    					$.ajax({
+				            type: 'GET',
+				            url: "http://107.170.191.250:8080/webservices/bares/",
+				            dataType: 'text',
+				            crossDomain: true,
+				            success: function(data, ts, xhr){
+				                $_SESSION.set("ServerData",data);
+				            }
+				        });
+						$.ajax({
+				            type: 'GET',
+				            url: "http://107.170.191.250:8080/webservices/promocoes/",
+				            dataType: 'text',
+				            crossDomain: true,
+				            success: function(data, ts, xhr){
+				            	$_SESSION.set("tempMess",data);
+				            	var bars = JSON.parse(localStorage.getItem("ServerData"));
+					            for(var i=0; i < bars.length; i++){
+					            	$("#"+bars[i].pk).html(countMessages(bars[i].pk))
+					            }
+				            	console.log("messages Updated");
+				            	$("#updade").html("Continue puxando para atualizar");
+				            	updating = 0;
+				            }
+				        });
+				        $.ajax({
+				            type: 'GET',
+				            url: "http://107.170.191.250:8080/webservices/bares/num/",
+				            dataType: 'text',
+				            crossDomain: true,
+				            success: function(data, ts, xhr){
+				                var num = JSON.parse(data).qtd;
+				                var NumBares = JSON.parse($_SESSION.get("ServerData")).length;
+				                if(num != NumBares){
+				                    bar.setData();
+				                    location.href = "index.html";
+				                }
+				            }
+				        });
+					},200);
+    			}
+    		},300);
+    		var navWidth = sub($("#nav").css("width"),"px");
     		var newWidth = (navWidth/2) - 5.5;
     		$("#nav .tabAll").css("width",newWidth+"px");
     		$("#nav .tabHot").css("width",newWidth+"px");
@@ -81,56 +130,68 @@
     		var activeTab = $_SESSION.get("activeTab");
     		var IsHot = "";
     		if(activeTab == "Hot"){
+    			var subx = 0;
     			$("#nav .tabHot").attr("class","tabHot active");
     			$("#nav .tabAll").attr("class","tabAll noactive");
     			IsHot = "";
-    			var x = new Array();
     			if(!$_SESSION.get("tempHots")){
     				console.log("NO HOTS");
     			}
     			else{
     				var bars = JSON.parse(localStorage.getItem("tempHots"));
+    				var x = new Array();
 		            for(var i=0; i < bars.length; i++){
 		            	var hot = rpl(bars[i],'\'','"');
 		            	var jHot = JSON.parse(hot);
-		            	x[i] = jHot.hot + ":" + jHot.id;
+		            	if(jHot.hot > 0){
+		            		x[i] = jHot.hot + ":" + jHot.id;
+		            		console.log("HERE");
+		            		subx++;
+		            	}
 		            }
 		            
 		            x.sort();
-		            console.log(x);
-		            for(var i =  x.length - 1; i>= 0; i--){
-		            	var id = matrix(x[i])['id'];
-			            if(i > x.length - 4){
-					 		$("#scroller").append("<div class='bar' id='"+ bar.attr(id,"name") +"'><div class='photo'><div id='"+id+"' class='counter'>"+countMessages(id)+"</div><img class='thumb' src='http://189.124.190.90:8000/static/"+bar.attr(id,"image")+"'></div><span class='name'>"+bar.attr(id,"name")+"</span><br><br><span class='square'>"+bar.attr(id,"square")+"</span><img class='hot' src='img/icons/Hot.png'></div><br class='break'><hr>");
-					 	}
-					 	else{
-					 		var opacity = (1/(x.length - 4))* i;
-					 		$("#scroller").append("<div class='bar' id='"+ bar.attr(id,"name") +"'><div class='photo'><div id='"+id+"' class='counter'>"+countMessages(id)+"</div><img class='thumb' src='http://189.124.190.90:8000/static/"+bar.attr(id,"image")+"'></div><span class='name'>"+bar.attr(id,"name")+"</span><br><br><span class='square'>"+bar.attr(id,"square")+"</span><img class='hot' src='img/icons/Hot2.png' style='opacity:"+opacity+"'></div><br class='break'><hr>");
-					 	}
+		            if(x.length > 0){
+			            for(var i = 0; i < (subx); i++){
+			            	var id = matrix(x[i])['id'];
+				            if(i < 4){
+						 		$("#scroller").append("<div class='bar' id='"+ bar.attr(id,"name") +"'><div class='photo'><div id='"+id+"' class='counter'>"+countMessages(id)+"</div><img class='thumb' src='http://107.170.191.250:8080/static/"+bar.attr(id,"image")+"'></div><span class='name'>"+bar.attr(id,"name")+"</span><br><br><span class='square'>"+bar.attr(id,"square")+"</span><img class='hot' src='img/icons/Hot.png'></div><br class='break'><hr>");
+						 	}
+						 	else{
+						 		var opacity = (1/(x.length - 4))* i;
+						 		$("#scroller").append("<div class='bar' id='"+ bar.attr(id,"name") +"'><div class='photo'><div id='"+id+"' class='counter'>"+countMessages(id)+"</div><img class='thumb' src='http://107.170.191.250:8080/static/"+bar.attr(id,"image")+"'></div><span class='name'>"+bar.attr(id,"name")+"</span><br><br><span class='square'>"+bar.attr(id,"square")+"</span><img class='hot' src='img/icons/Hot2.png' style='opacity:"+opacity+"'></div><br class='break'><hr>");
+						 	}
+			            }
+		            }
+		            else{
+		            	$("#scroller").append("<span style='position:absolute;top:5px;width:100%;text-align:center;'>Nenhum bar bombando no momento</span>");
 		            }
     			}
 	           
     		}
     		else{
-    			$("#nav .tabAll").attr("class","tabAll active");
-    			$("#nav .tabHot").attr("class","tabHot noactive");
-	    		var bars = JSON.parse(localStorage.getItem("ServerData"));
-	            for(var i=0; i < bars.length; i++){
-	            	$("#scroller").append("<div class='bar ' finder='"+bars[i].pk+"' id='"+ bar.attr(bars[i].pk,"name") +"'><div class='photo'><div id='"+bars[i].pk+"' class='counter'>"+countMessages(bars[i].pk)+"</div><img class='thumb' src='http://189.124.190.90:8000/static/"+bar.attr(bars[i].pk,"image")+"'></div><span class='name'>"+bar.attr(bars[i].pk,"name")+"</span><br><br><span class='square'>"+bar.attr(bars[i].pk,"square")+"</span></div><br class='break'><hr>"); 
-	            }
+    			var n = new Array();
+    			for(var i=0; i < bars.length; i++){
+    				n[i] = bar.attr(bars[i].pk,"name");
+    			}
+    			n.sort();
+    			for(var i = 0; i < n.length; i++){
+    				var pk = bar.get(n[i]);
+    				console.log(pk);
+    				$("#scroller").append("<div class='bar ' finder='"+pk+"' id='"+ bar.attr(pk,"name") +"'><div class='photo'><div id='"+pk+"' class='counter'>"+countMessages(pk)+"</div><img class='thumb' src='http://107.170.191.250:8080/static/"+bar.attr(pk,"image")+"'></div><span class='name'>"+bar.attr(pk,"name")+"</span><br><br><span class='square'>"+bar.attr(pk,"square")+"</span></div><br class='break'><hr>"); 
+    			}
     		}
     	});
     </script>
     <script type="text/javascript">
-		$(function(){
-			var myIscroll = new IScroll('#container', { mouseWheel: true, click: true });
-			setTimeout(function(){
-	     		myIscroll.refresh(); 
-	  		}, 500);
-		});
+    	var myIscroll;
+    	$(function(){
+    		myIscroll = new IScroll('#container', { mouseWheel: true, click: true});
+    	});
 	</script>
 	<script type="text/javascript">
 		function onLoad() {
+			myIscroll.refresh();
         	document.addEventListener("deviceready", onDeviceReady, false);
     	}
     	function onDeviceReady() {
@@ -189,7 +250,7 @@
 		<!-- Body data -->
 		<div id="container">
 			<div id="scroller">
-				
+				<span id='updade'>Continue puxando para atualizar</span>
 			</div>
 		</div>
 		<!-- Bar Click -->
@@ -197,7 +258,7 @@
 			$(function(){
 				$(".bar").click(function(){
 					console.log("bar");
-					$.mobile.changePage( "profile.html#" + $(this).attr("id"), { transition: "slide" });
+					location.href =  "profile.html#" + $(this).attr("id");
 				});
 			});
 		</script>
@@ -208,12 +269,13 @@
 				<div class="select" href='index.html'><img src="img/icons/Bares.png"> <span>Bares</span></div>
 				<hr> <!-- Quebra de linha -->
 				<div class="select" href='about.html'><img src="img/icons/About.png"> <span>Sobre</span></div>
+				<hr> <!-- Quebra de linha -->
+				<div class="select" href='feedback.html'><img src="img/icons/Feedback.png"> <span>Feedback</span></div>
 				<!-- Menu Buttons Script -->
 				<script type="text/javascript">
 					$("#MENU-Options .select").click(function(e){
 						e.preventDefault();
-						$.mobile.changePage( $(this).attr("href");, { transition: "slide" });
-						
+						location.href = $(this).attr("href");
 					});
 				</script>
 			</div>
