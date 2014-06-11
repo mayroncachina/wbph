@@ -465,7 +465,8 @@ body{
 }
 #carousel .previous{
   position: absolute;
-  top:1%;
+  margin-top: -30px;
+  top:50%;
   left: 0px;
   float: left;
   bottom: 0px;
@@ -473,7 +474,8 @@ body{
 }
 #carousel .next{
   position: absolute;
-  top:1%;
+  margin-top: -30px;
+  top:50%;
   right: 0px;
   float: right;
   bottom: 0px;
