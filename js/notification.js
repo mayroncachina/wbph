@@ -11,7 +11,7 @@ setInterval(function(){
 
 
 	    	for (var i = 0; i < data.promocoes.length; i++) {
-	    		alert(a.promocoes[i][1]);
+	    		alert(data.promocoes[i][1]);
 	    		/*
 				window.plugin.notification.local.add({
 				    id:         1,
