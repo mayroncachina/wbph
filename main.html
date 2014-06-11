@@ -8,27 +8,169 @@
 	<script src="js/jquery.js"></script>
 	<script type="application/javascript" src="js/iscroll-lite.js?v4"></script>
     <script src="js/common.js"></script>
-    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script src="cordova.js"></script>
     <script src="js/views.js"></script>
     <script src="js/jquery.imageCache.js"></script>
     <script src="js/jquery.mobile-1.4.0.min.js"></script>
     <!-- LOAD CUSTOM LIBS -->
     <link rel="stylesheet" type="text/css" href="css/themes/default/custom.css"/>
-  
-  <script type="text/javascript" charset="utf-8">
+    <script type="text/javascript">
+			$(function(){
+				if(!$_SESSION.get("UserSetStar")){
+					$_SESSION.set("UserSetStar","{}");
+				}
+				if(!$_SESSION.get("timeOutHot")){
+					$_SESSION.set("timeOutHot","{}");
+				}
+				if(!$_SESSION.get("readMessages")){
+					$_SESSION.set("readMessages","{}");
+				}
+				var deg = 5;
+				setInterval(function(){
+					$('#load').css("transform", "rotate("+deg+"deg)");
+					deg++;
+				},1);
+			});
+		</script>
+    <script type="text/javascript">
+    	$(function(){
+    		var heightLoad = $('#load').height();
+			var docHeight = $(document).height();
+			var padding = (docHeight - heightLoad) / 2;
+			$('#load').css("margin-top", padding + "px");
 
-    document.addEventListener("deviceready", onDeviceReady, false);
-    function onDeviceReady() {
-        alert('ok device')
-	      alert(device.model)
-    }
-	$( document ).ready(function() {
-	      alert('jquery')
-	});
+			// ---------------
 
+    		if(!$_SESSION.get("ServerData")){
+    			bar.setData();
+    			$('#block').css("display","block");
+    			console.log("Parou");
+    		}
+    		else{
+    			console.log();
+    		}
+		    var loop = 60000;
+		    var StatusI = window.navigator.onLine;
+		    if(!StatusI){
+		    	// navigator.app.exitApp();
+		    }
+		    bar.getHot();
+			bar.getStar();
+			bar.getMessages();
+			bar.countBars();
+			var bars = JSON.parse(localStorage.getItem("ServerData"));
+            for(var i=0; i < bars.length; i++){
+            	$("#"+bars[i].pk).html(countMessages(bars[i].pk))
+            }
+    		setInterval(function(){
+
+    			bar.getHot();
+    			bar.getStar();
+    			bar.getMessages();
+    			bar.countBars();
+    			var bars = JSON.parse(localStorage.getItem("ServerData"));
+	            for(var i=0; i < bars.length; i++){
+	            	$("#"+bars[i].pk).html(countMessages(bars[i].pk))
+	            }
+    		},loop);
+    		var updating = 0
+    		setInterval(function(){
+    			var sc = $("#scroller").offset().top;
+    			if(sc > 190 && updating == 0){
+    				console.log("updade");
+    				updating = 1;
+    				$("#updade").html("Atualizando");
+    				setTimeout(function(){
+    					$.ajax({
+				            type: 'GET',
+				            url: "http://107.170.191.250:8080/webservices/bares/",
+				            dataType: 'text',
+				            crossDomain: true,
+				            success: function(data, ts, xhr){
+				                $_SESSION.set("ServerData",data);
+				            }
+				        });
+						$.ajax({
+				            type: 'GET',
+				            url: "http://107.170.191.250:8080/webservices/promocoes/",
+				            dataType: 'text',
+				            crossDomain: true,
+				            success: function(data, ts, xhr){
+				            	$_SESSION.set("tempMess",data);
+				            	var bars = JSON.parse(localStorage.getItem("ServerData"));
+					            for(var i=0; i < bars.length; i++){
+					            	$("#"+bars[i].pk).html(countMessages(bars[i].pk))
+					            }
+				            	console.log("messages Updated");
+				            	$("#updade").html("Continue puxando para atualizar");
+				            	updating = 0;
+				            }
+				        });
+				        $.ajax({
+				            type: 'GET',
+				            url: "http://107.170.191.250:8080/webservices/bares/num/",
+				            dataType: 'text',
+				            crossDomain: true,
+				            success: function(data, ts, xhr){
+				                var num = JSON.parse(data).qtd;
+				                var NumBares = JSON.parse($_SESSION.get("ServerData")).length;
+				                if(num != NumBares){
+				                    bar.setData();
+				                    location.href = "index.html";
+				                }
+				            }
+				        });
+					},200);
+    			}
+    		},300);
+    	});
     </script>
+    <script type="text/javascript">
+    	$(function(){
+    		listBars();
+    	})
+	</script>
+	<script type="text/javascript">
+		listBars();
+		var myScroll;
+		var yourScroll;
+		function loaded() {
+			myScroll = new iScroll('container');
+		}
+
+		document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+
+		document.addEventListener('DOMContentLoaded', loaded, false);
+
+	</script>
+	<script type="text/javascript">
+		function onLoad() {
+			myScroll.refresh();
+        	document.addEventListener("deviceready", onDeviceReady, false);
+    	}
+    	function onDeviceReady() { 
+        	document.addEventListener("backbutton", onBackKeyDown, false);
+        	var element = document.getElementById('deviceProperties');
+        		if(!$_SESSION.get("deviceName")){
+        			$_SESSION.set("deviceName",device.name);
+        		}
+        		if(!$_SESSION.get("devicePlatForm")){
+        			$_SESSION.set("devicePlatForm",device.platform);
+        		}
+        		if(!$_SESSION.get("deviceUUID")){
+        			$_SESSION.set("deviceUUID",device.uuid);
+        		}
+        		if(!$_SESSION.get("deviceVersion")){
+        			$_SESSION.set("deviceVersion",device.version);
+        		}
+        		window.plugin.notification.local.add({ message: 'Great app!' });
+    	}
+    	function onBackKeyDown() {
+    		return false;
+    	}
+	</script>
 </head>
-<body>
+<body onload="onLoad()">
 	<div id='main' data-role="page" tabindex="0" class="ui-page ui-page-active" style="background-color: #649940; min-height: 640px;">
 		<!-- Header data -->
 		<div id="header">
