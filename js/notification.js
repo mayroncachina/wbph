@@ -7,7 +7,7 @@ setInterval(function(){
 	    dataType: 'text',
 	    crossDomain: true,
 	    success: function(data, ts, xhr){
-	    	console.log(data)
+	    	alert(data)
 	/*
 			window.plugin.notification.local.add({
 			    id:         1,
