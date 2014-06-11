@@ -8,7 +8,7 @@
 	<script src="js/jquery.js"></script>
 	<script type="application/javascript" src="js/iscroll-lite.js?v4"></script>
     <script src="js/common.js"></script>
-    <script src="js/cordova.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
     <script src="js/views.js"></script>
     <script src="js/jquery.imageCache.js"></script>
     <script src="js/jquery.mobile-1.4.0.min.js"></script>
@@ -20,10 +20,10 @@
     document.addEventListener("deviceready", onDeviceReady, false);
     function onDeviceReady() {
         alert('ok device')
+	      alert(device.model)
     }
 	$( document ).ready(function() {
 	      alert('jquery')
-	      alert(device.model)
 	});
 
     </script>
