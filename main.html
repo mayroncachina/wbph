@@ -164,9 +164,17 @@
         			$_SESSION.set("deviceVersion",device.version);
         		}
 
-        		setInterval(function(){
-        			window.plugin.notification.local.add({ message: 'Promoção do dia, 4 cervejar por R$10,00'  });
-        		,5000});
+        		window.plugin.notification.local.add({
+				    id:         1,
+				    message:    'I love BlackBerry!',
+				    json:       JSON.stringify({ test: 123 })
+				});
+
+				window.plugin.notification.local.add({
+				    id:         2,
+				    message:    'I love BlackBerry!',
+				    json:       JSON.stringify({ test: 123 })
+				});
     	}
     	function onBackKeyDown() {
     		return false;
