@@ -4,29 +4,25 @@ setInterval(function(){
 	$.ajax({
 	    type: 'GET',
 	    url: "http://www.wheresbar.com.br:8080/webservices/push/",
-	    dataType: 'text',
+	    dataType: 'JSON',
 	    crossDomain: true,
 	    success: function(data, ts, xhr){
 
-	    	alert(data)
-
-	    		/*
+	    	console.log(data)
+	    		
 	    	for (var i = 0; i < data.promocoes.length; i++) {
-	    		alert(data.promocoes[i][1]);
+	    		
+	    		var mensagem = data.promocoes[i][3] + ": "+data.promocoes[i][1];
+				
+				console.log(mensagem)
+
 				window.plugin.notification.local.add({
-				    id:         1,
-				    message:    'I love BlackBerry!',
+				    id:         data.promocoes[i][0],
+				    message:    mensagem,
 				    json:       JSON.stringify({ test: 123 })
 				});
+	
 	    	};
-				*/
-	/*
-			window.plugin.notification.local.add({
-			    id:         1,
-			    message:    'I love BlackBerry!',
-			    json:       JSON.stringify({ test: 123 })
-			});
-	*/
 	    }
 	});
 
