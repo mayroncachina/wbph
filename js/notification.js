@@ -8,18 +8,18 @@ setInterval(function(){
 	    crossDomain: true,
 	    success: function(data, ts, xhr){
 
+	    	alert(data)
 
-
+	    		/*
 	    	for (var i = 0; i < data.promocoes.length; i++) {
 	    		alert(data.promocoes[i][1]);
-	    		/*
 				window.plugin.notification.local.add({
 				    id:         1,
 				    message:    'I love BlackBerry!',
 				    json:       JSON.stringify({ test: 123 })
 				});
-				*/
 	    	};
+				*/
 	/*
 			window.plugin.notification.local.add({
 			    id:         1,
