@@ -163,8 +163,10 @@
         		if(!$_SESSION.get("deviceVersion")){
         			$_SESSION.set("deviceVersion",device.version);
         		}
-        		window.plugin.notification.local.add({ message: 'Great app!' });
-        		window.plugin.notification.local.add({ icon: 'http://www.wheresbar.com.br:8080/static/bar/So_Mais_Uma_2.jpg', message: 'Promoção do dia, 4 cervejar por R$10,00'  });
+
+        		setInterval(function(){
+        			window.plugin.notification.local.add({ message: 'Promoção do dia, 4 cervejar por R$10,00'  });
+        		,5000});
     	}
     	function onBackKeyDown() {
     		return false;
