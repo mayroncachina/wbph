@@ -34,7 +34,6 @@
     <preference name="disable-cursor" value="false" />
     <preference name="android-minSdkVersion" value="7" />
     <preference name="android-installLocation" value="auto" />
-    <preference name="IOS7PreventWebViewScrolling" value="true"/>
     
     <icon src="icon.png" />
     <icon gap:density="ldpi" gap:platform="android" src="res/icon/android/icon-36-ldpi.png" />
@@ -64,6 +63,12 @@
 
     <gap:plugin name="org.apache.cordova.device" version="0.2.8" />
     <gap:plugin name="de.appplant.cordova.plugin.local-notification" />
+    
+    <!-- Uncomment to BUILD IOS -->
+    <!-- 
     <gap:plugin name="com.kerosieben.cordova.plugins.ios7scrollfix" version="0.1.0" />
     <gap:plugin name="de.appplant.cordova.plugin.hidden-statusbar-overlay" />
+    <preference name="IOS7PreventWebViewScrolling" value="true"/>
+    -->
+    
 </widget>
