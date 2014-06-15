@@ -1,4 +1,45 @@
 
+function initPushwoosh() {
+    var pushNotification = window.plugins.pushNotification;
+    pushNotification.onDeviceReady();
+    pushNotification.registerDevice({
+            alert: true,
+            badge: true,
+            pw_appid: "AEE04-46B30",
+            appname: "Wheresbar",
+            projectid: "870510407514",
+            appid: "AEE04-46B30"
+        },
+        function(status) {
+            PPR.info.push_token = status['deviceToken'] || status;
+        },
+        function(status) {
+
+        }
+    );
+
+    if (pushNotification.setApplicationIconBadgeNumber)
+        pushNotification.setApplicationIconBadgeNumber(0);
+
+    document.addEventListener('push-notification', function(event) {
+        if (pushNotification.setApplicationIconBadgeNumber)
+            pushNotification.setApplicationIconBadgeNumber(0);
+    });
+}
+
+
+
+function onBackButton(e) {
+    try {
+            $.mobile.changePage("#main");
+    } catch (e) {
+        console.log('[onBackButton] Exception: ' + e);
+    }
+}
+
+
+/*
+** Local Notification
 setInterval(function(){
 
 	$.ajax({
@@ -27,3 +68,4 @@ setInterval(function(){
 	});
 
 }, 600000);
+*/
