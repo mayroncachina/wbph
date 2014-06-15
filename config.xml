@@ -62,7 +62,7 @@
     <gap:splash gap:platform="winphone" src="res/screen/windows-phone/screen-portrait.jpg" />
 
     <gap:plugin name="org.apache.cordova.device" version="0.2.8" />
-    <gap:plugin name="de.appplant.cordova.plugin.local-notification" />
+    <!--<gap:plugin name="de.appplant.cordova.plugin.local-notification" />-->
     <gap:plugin name="com.pushwoosh.plugins.pushwoosh" version="3.0.2" />
     
     <!-- Uncomment to BUILD IOS -->
