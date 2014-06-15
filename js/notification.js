@@ -1,6 +1,6 @@
 
 function initPushwoosh() {
-	alert('ok')
+	
     var pushNotification = window.plugins.pushNotification;
     pushNotification.onDeviceReady();
     pushNotification.registerDevice({
