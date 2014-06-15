@@ -144,31 +144,35 @@
 		document.addEventListener('DOMContentLoaded', loaded, false);
 
 	</script>
-	<script type="text/javascript">
-		function onLoad() {
-			myScroll.refresh();
-        	document.addEventListener("deviceready", onDeviceReady, false);
-    	}
-    	function onDeviceReady() { 
-        	document.addEventListener("backbutton", onBackKeyDown, false);
-        	var element = document.getElementById('deviceProperties');
-        		if(!$_SESSION.get("deviceName")){
-        			$_SESSION.set("deviceName",device.name);
-        		}
-        		if(!$_SESSION.get("devicePlatForm")){
-        			$_SESSION.set("devicePlatForm",device.platform);
-        		}
-        		if(!$_SESSION.get("deviceUUID")){
-        			$_SESSION.set("deviceUUID",device.uuid);
-        		}
-        		if(!$_SESSION.get("deviceVersion")){
-        			$_SESSION.set("deviceVersion",device.version);
-        		}
-    	}
-    	function onBackKeyDown() {
-    		return false;
-    	}
-	</script>
+<script type="text/javascript">
+	function onLoad() {
+		myScroll.refresh();
+		document.addEventListener("deviceready", onDeviceReady, false);
+	}
+	
+	var pushNotification;
+	var push_token;
+	
+	document.addEventListener("backbutton", onBackButton, false);
+	
+	function onDeviceReady() { 
+		initPushwoosh();
+	
+		var element = document.getElementById('deviceProperties');
+		if(!$_SESSION.get("deviceName")){
+			$_SESSION.set("deviceName",device.name);
+		}
+		if(!$_SESSION.get("devicePlatForm")){
+			$_SESSION.set("devicePlatForm",device.platform);
+		}
+		if(!$_SESSION.get("deviceUUID")){
+			$_SESSION.set("deviceUUID",device.uuid);
+		}
+		if(!$_SESSION.get("deviceVersion")){
+			$_SESSION.set("deviceVersion",device.version);
+		}
+	}
+ </script>
 </head>
 <body onload="onLoad()">
 	<div id='main' data-role="page" tabindex="0" class="ui-page ui-page-active" style="background-color: #649940; min-height: 640px;">
