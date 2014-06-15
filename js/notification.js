@@ -1,6 +1,46 @@
 
 function initPushwoosh() {
-	
+
+
+function initPushwoosh()
+{
+    var pushNotification = window.plugins.pushNotification;
+ 
+    //set push notifications handler
+    document.addEventListener('push-notification', function(event) {
+        var title = event.notification.title;
+        var userData = event.notification.userdata;
+                                 
+        if(typeof(userData) != "undefined") {
+            console.warn('user data: ' + JSON.stringify(userData));
+        }
+                                     
+        alert(title);
+    });
+ 
+  
+    pushNotification.onDeviceReady({ 
+            alert: true,
+            badge: true,
+            pw_appid: "AEE04-46B30",
+            appname: "Wheresbar",
+            projectid: "870510407514",
+            appid: "AEE04-46B30"	
+    });
+ 
+    //register for pushes
+    pushNotification.registerDevice(
+        function(status) {
+            var pushToken = status;
+            console.warn('push token: ' + pushToken);
+        },
+        function(status) {
+            console.warn(JSON.stringify(['failed to register ', status]));
+        }
+    );
+}
+
+/*
     var pushNotification = window.plugins.pushNotification;
     pushNotification.onDeviceReady();
     pushNotification.registerDevice({
@@ -26,7 +66,11 @@ function initPushwoosh() {
         if (pushNotification.setApplicationIconBadgeNumber)
             pushNotification.setApplicationIconBadgeNumber(0);
     });
+    */
 }
+
+
+
 
 
 
