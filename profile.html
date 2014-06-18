@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
 	<!-- LOAD JQUERY LIBS -->
 	<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.0.min.css"/>
+	<link rel="stylesheet" type="text/css" href="css/idangerous.swiper.css"/>
 	<script src="js/jquery.js"></script>
 	<script src="js/jquery.json.js"></script>
     <script src="js/common.js"></script>
@@ -148,7 +149,7 @@
 			img.css("margin-Top",alignNext);
     	}
     </script>
- <script type="text/javascript">
+ 	<script type="text/javascript">
 		var myIscroll;
     	$(function(){
     		myIscroll = new IScroll('#container', { mouseWheel: true, click: true});
@@ -240,6 +241,35 @@
 						<span id='setHot'><img id='hotImage' src="img/icons/Hot2.png" height='24px;'>&nbsp;<span id='hotLabel'>Dê um Hot</span></span>
 						<a id='gmaps'  target='_blank' href=''><span id='place'>&nbsp;<img src='img/icons/place.png' height='24px'></span>&nbsp;Mapa</a>
 					</div>
+
+
+					  <div class="tabs"> <a href="#" class="active">Tab 1</a> <a href="#" style="margin:0 17px">Tab 2</a> <a href="#">Tab 3</a> </div>
+					  <div class="swiper-container">
+					    <div class="swiper-wrapper">
+					      <div class="swiper-slide">
+					        <div class="content-slide">
+					          <h2>Tabs Example</h2>
+					          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus lacinia vulputate hendrerit. Suspendisse potenti. Etiam rutrum egestas massa, ut facilisis magna tristique nec. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nunc interdum tempus turpis ut tempus. Mauris dictum blandit lectus, a dictum erat dictum non. Etiam ultrices convallis interdum. Curabitur varius auctor enim, quis dictum nibh fringilla ut. Sed vel lacus ac odio molestie sodales quis sit amet lacus. Curabitur id porta eros. Fusce in varius nisi.</p>
+					        </div>
+					      </div>
+					      <div class="swiper-slide">
+					        <div class="content-slide">
+					          <h2>Tab 2</h2>
+					          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus lacinia vulputate hendrerit. Suspendisse potenti. Etiam rutrum egestas massa, ut facilisis magna tristique nec. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nunc interdum tempus turpis ut tempus. Mauris dictum blandit lectus, a dictum erat dictum non. Etiam ultrices convallis interdum. Curabitur varius auctor enim, quis dictum nibh fringilla ut. Sed vel lacus ac odio molestie sodales quis sit amet lacus. Curabitur id porta eros. Fusce in varius nisi.</p>
+					        </div>
+					      </div>
+					      <div class="swiper-slide">
+					        <div class="content-slide">
+					          <h2>Tab 3</h2>
+					          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus lacinia vulputate hendrerit. Suspendisse potenti. Etiam rutrum egestas massa, ut facilisis magna tristique nec. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nunc interdum tempus turpis ut tempus. Mauris dictum blandit lectus, a dictum erat dictum non. Etiam ultrices convallis interdum. Curabitur varius auctor enim, quis dictum nibh fringilla ut. Sed vel lacus ac odio molestie sodales quis sit amet lacus. Curabitur id porta eros. Fusce in varius nisi.</p>
+					        </div>
+					      </div>
+					    </div>
+					  </div>
+
+
+
+
 					<div class="about">
 						
 					</div>
@@ -396,5 +426,25 @@
 			
 		</div>
 	</div>
+
+  <script src="js/idangerous.swiper.min.js"></script>
+  <script>
+  var tabsSwiper = new Swiper('.swiper-container',{
+    speed:500,
+    onSlideChangeStart: function(){
+      $(".tabs .active").removeClass('active')
+      $(".tabs a").eq(tabsSwiper.activeIndex).addClass('active')  
+    }
+  })
+  $(".tabs a").on('touchstart mousedown',function(e){
+    e.preventDefault()
+    $(".tabs .active").removeClass('active')
+    $(this).addClass('active')
+    tabsSwiper.swipeTo( $(this).index() )
+  })
+  $(".tabs a").click(function(e){
+    e.preventDefault()
+  })
+  </script>	
 </body>
 </html>
